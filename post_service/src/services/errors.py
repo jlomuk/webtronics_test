@@ -1,0 +1,2 @@
+class NotFoundPost(Exception):
+    pass

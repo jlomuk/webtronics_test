@@ -1,0 +1,371 @@
+{
+	"info": {
+		"_postman_id": "bb7ca463-3f8f-4619-9338-6ae602d3f7de",
+		"name": "poster",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15491800"
+	},
+	"item": [
+		{
+			"name": "registration",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"example@mail.com\",\n  \"password\": \"string12345\",\n  \"password_repeat\": \"string12345\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/auth/registration",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"registration"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"example@mail.com\",\n  \"password\": \"string12345\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/auth/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "refresh_token",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"refresh_token\": \"string\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/auth/refresh_token",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"refresh_token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get posts",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzMxNzMwMzUsImV4cCI6MjAzMzE2OTQzNSwic3ViIjoiMSIsInVzZXIiOnsiaWQiOiIxIiwiZW1haWwiOiJqbG9tdWtAYmsucnUifSwidHlwIjoiQmVhcmVyIn0.gHmKcXiwbFG7ZOZDta0lb_jQ3rGX9xr66cDQ_30aono",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/v1/post",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get post id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzMxNzMwMzUsImV4cCI6MjAzMzE2OTQzNSwic3ViIjoiMSIsInVzZXIiOnsiaWQiOiIxIiwiZW1haWwiOiJqbG9tdWtAYmsucnUifSwidHlwIjoiQmVhcmVyIn0.gHmKcXiwbFG7ZOZDta0lb_jQ3rGX9xr66cDQ_30aono",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/v1/post/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"post",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete post",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzMxNzMwMzUsImV4cCI6MjAzMzE2OTQzNSwic3ViIjoiMSIsInVzZXIiOnsiaWQiOiIxIiwiZW1haWwiOiJqbG9tdWtAYmsucnUifSwidHlwIjoiQmVhcmVyIn0.gHmKcXiwbFG7ZOZDta0lb_jQ3rGX9xr66cDQ_30aono",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/v1/task/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"task",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create post",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzMxNzMwMzUsImV4cCI6MjAzMzE2OTQzNSwic3ViIjoiMSIsInVzZXIiOnsiaWQiOiIxIiwiZW1haWwiOiJqbG9tdWtAYmsucnUifSwidHlwIjoiQmVhcmVyIn0.gHmKcXiwbFG7ZOZDta0lb_jQ3rGX9xr66cDQ_30aono",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"some_title\",\n  \"body\": \"some_text\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/post/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"post",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update post",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzMxNzMwMzUsImV4cCI6MjAzMzE2OTQzNSwic3ViIjoiMSIsInVzZXIiOnsiaWQiOiIxIiwiZW1haWwiOiJqbG9tdWtAYmsucnUifSwidHlwIjoiQmVhcmVyIn0.gHmKcXiwbFG7ZOZDta0lb_jQ3rGX9xr66cDQ_30aono",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"SOME+TITLE\",\n  \"body\": \"SOME+TEXT\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/post/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"post",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "like",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzMxNzMwMzUsImV4cCI6MjAzMzE2OTQzNSwic3ViIjoiMSIsInVzZXIiOnsiaWQiOiIxIiwiZW1haWwiOiJqbG9tdWtAYmsucnUifSwidHlwIjoiQmVhcmVyIn0.gHmKcXiwbFG7ZOZDta0lb_jQ3rGX9xr66cDQ_30aono",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"some_title\",\n  \"body\": \"some_text\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/post/1/like",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"post",
+						"1",
+						"like"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dislike",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzMxNzMwMzUsImV4cCI6MjAzMzE2OTQzNSwic3ViIjoiMSIsInVzZXIiOnsiaWQiOiIxIiwiZW1haWwiOiJqbG9tdWtAYmsucnUifSwidHlwIjoiQmVhcmVyIn0.gHmKcXiwbFG7ZOZDta0lb_jQ3rGX9xr66cDQ_30aono",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"some_title\",\n  \"body\": \"some_text\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/post/1/dislike",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"post",
+						"1",
+						"dislike"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

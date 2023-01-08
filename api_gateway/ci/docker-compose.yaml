@@ -1,0 +1,22 @@
+version: "3.9"
+
+networks:
+  services:
+    external: false
+    name: services
+
+services:
+  api_gateway_backend:
+    networks:
+      - services
+    build:
+      context: ../
+      dockerfile: ci/Dockerfile
+    ports:
+      - "8000:8000"
+    restart: on-failure
+    environment:
+      USER_BACKEND_SERVICE: 'http://${USER_SERVICE_HOST}:${USER_SERVICE_PORT}/api/v1/'
+      TASK_BACKEND_SERVICE: 'http://${TASK_SERVICE_HOST}:${TASK_SERVICE_PORT}/api/v1/'
+    volumes:
+      - ../src:/src/app
