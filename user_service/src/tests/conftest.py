@@ -1,19 +1,21 @@
 import datetime
 from typing import Tuple
 
+from databases import Database
+from pytest_asyncio import fixture
 from sqlalchemy import create_engine, insert
 from sqlalchemy_utils import database_exists, create_database
-
-from db.user_model import metadata_obj, get_db, users
-from services.auth_service import AuthService
-from schemas.user_schema import User
-from databases import Database
-from pytest import fixture
 from starlette.testclient import TestClient
-from settings import settings
-import app
 
-engine = create_engine(settings.POSTGRES_TEST_URL, echo=True)
+import app
+from db.user_model import metadata_obj, get_db, users
+from schemas.user_schema import User
+from services.auth_service import AuthService
+from settings import settings
+from tests.mocks import MockHunterRequester
+from vendors.hunter_email import get_hunter_requester, HunterRequester
+
+engine = create_engine(settings.POSTGRES_TEST_URL)
 if not database_exists(engine.url):
     create_database(engine.url)
 
@@ -34,9 +36,17 @@ def disconnect_test_db():
     metadata_obj.drop_all(engine)
 
 
+def dependency_mock():
+    def mock_hunter():
+        return HunterRequester(MockHunterRequester(), api_token='')
+
+    app.app.dependency_overrides[get_hunter_requester] = mock_hunter
+
+
 @fixture(scope='session', autouse=True)
-def start_db():
+def start_app():
     connect_test_db()
+    dependency_mock()
     yield
     disconnect_test_db()
 
@@ -73,3 +83,13 @@ def create_invalid_token() -> Tuple[dict, User]:
     user = User(id=1, email='Test1@mail.su', password='password')
     tokens = auth.create_jwt_tokens(user)
     return tokens, user
+
+
+@fixture()
+def instance_hunter() -> HunterRequester:
+    return HunterRequester(MockHunterRequester(), api_token='test_token')
+
+
+@fixture()
+def instance_hunter_disabled() -> HunterRequester:
+    return HunterRequester(MockHunterRequester(), api_token='')

@@ -8,6 +8,7 @@ from starlette import status
 from services.user_service import create_user, get_user_by_email
 from services.auth_service import WrongPassword, ExpiredToken, NotValidToken, AuthService
 from db.user_model import get_db
+from vendors.hunter_email import get_hunter_requester
 
 auth_router = APIRouter(prefix='/auth', tags=['auth'])
 
@@ -43,8 +44,8 @@ async def login(user_request: auth_schema.LoginRequest, auth_service: AuthServic
                   response_model=token_schemas.TokenResponse,
                   status_code=status.HTTP_201_CREATED)
 async def registration(new_user: auth_schema.RegistrationRequest, auth_service: AuthService = Depends(AuthService),
-                       db=Depends(get_db)):
-    user = await create_user(new_user.dict(), db)
+                       db=Depends(get_db), hunter_checker=Depends(get_hunter_requester)):
+    user = await create_user(new_user.dict(), db, hunter_checker)
     return auth_service.create_jwt_tokens(user)
 
 
