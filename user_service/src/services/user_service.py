@@ -6,9 +6,13 @@ from fastapi.exceptions import HTTPException
 from starlette import status
 from schemas.user_schema import User
 from databases import Database
+from vendors.hunter_email import hunter_requestor
 
 
 async def create_user(data: dict, database: Database):
+    if not await hunter_requestor.verify_email(data['email']):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail='Предоставленная почта не является валидной/действующей')
     try:
         stmt = insert(users).returning(*users.c)
         result = await database.fetch_one(stmt, values=data)

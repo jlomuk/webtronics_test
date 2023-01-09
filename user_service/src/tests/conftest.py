@@ -13,6 +13,10 @@ from starlette.testclient import TestClient
 from settings import settings
 import app
 
+pytest_plugins = [
+    'tests.test_vendors'
+]
+
 engine = create_engine(settings.POSTGRES_TEST_URL, echo=True)
 if not database_exists(engine.url):
     create_database(engine.url)

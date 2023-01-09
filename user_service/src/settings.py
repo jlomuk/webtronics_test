@@ -14,6 +14,8 @@ class Settings(BaseSettings):
 
     SALT_FOR_PASSWORD: str = 'Fofo'
 
+    HUNTER__API_TOKEN: str = ''
+
     class Config:
         env_file = '.env'
 

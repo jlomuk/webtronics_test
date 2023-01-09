@@ -6,7 +6,7 @@ from databases import Database
 
 from settings import settings
 
-engine = create_engine(settings.POSTGRES_URL, echo=True)
+engine = create_engine(settings.POSTGRES_URL)
 metadata_obj = MetaData()
 
 users = sq.Table(
