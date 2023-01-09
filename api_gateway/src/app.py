@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from api import root_router
@@ -19,3 +20,6 @@ openapi_schema = get_openapi(
 
 
 app.openapi_schema = openapi_schema
+
+if __name__ == '__main__':
+    uvicorn.run('app:app', host='0.0.0.0', port=8000, reload=True)

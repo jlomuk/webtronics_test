@@ -10,7 +10,11 @@ auth_router = APIRouter(prefix='/auth', tags=['auth'])
 
 @auth_router.post("/refresh_token",
                   description='Обновление access токена',
-                  responses={200: {"model": auth.TokenResponse}},
+                  responses={200: {"model": auth.TokenResponse},
+                             401: {"description": "Unauthorized",
+                                   "content": {"application/json": {
+                                       "example": {"result": "Передан невалидный токен"}
+                                   }}}},
                   status_code=status.HTTP_200_OK)
 async def refresh_token(token: auth.RefreshTokenRequest):
     url = settings.USER_BACKEND_SERVICE.rstrip('/') + '/auth/refresh_token'
@@ -20,7 +24,11 @@ async def refresh_token(token: auth.RefreshTokenRequest):
 
 @auth_router.post("/login",
                   description='Логин пользователя с получением токенов',
-                  responses={200: {"model": auth.TokenResponse}},
+                  responses={200: {"model": auth.TokenResponse},
+                             400: {"description": "Bad Request",
+                                   "content": {"application/json": {
+                                       "example": {"result": "Wrong password"}
+                                   }}}},
                   status_code=status.HTTP_200_OK)
 async def login(user: auth.LoginRequest):
     url = settings.USER_BACKEND_SERVICE.rstrip('/') + '/auth/login'
@@ -30,7 +38,11 @@ async def login(user: auth.LoginRequest):
 
 @auth_router.post("/registration",
                   description='Регистрация нового пользователя',
-                  responses={200: {"model": auth.TokenResponse}},
+                  responses={200: {"model": auth.TokenResponse},
+                             400: {"description": "Bad Request",
+                                   "content": {"application/json": {
+                                       "example": {"result": "Такой пользователь уже существует"}
+                                   }}}},
                   status_code=status.HTTP_200_OK)
 async def registration(new_user: auth.RegistrationRequest):
     url = settings.USER_BACKEND_SERVICE.rstrip('/') + '/auth/registration'
