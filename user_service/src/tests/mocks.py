@@ -1,11 +1,9 @@
-from pytest_asyncio import fixture
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import parse_qs, urlparse
 
-from vendors.base_requestor import IAsyncClientRequester
-from vendors.hunter_email import HunterRequestor
+from vendors.base_requester import IAsyncClientRequester
 
 
-class MockHunterRequestor(IAsyncClientRequester):
+class MockHunterRequester(IAsyncClientRequester):
     INNER_TEST_DATA = {
         'valid@email.ru': {
             "data": {
@@ -37,10 +35,14 @@ class MockHunterRequestor(IAsyncClientRequester):
                 "result": "deliverable",
                 "_deprecation_notice": "Using result is deprecated, use status instead",
                 "email": "patrick@stripe.com"}},
-
+        'webmail@gmail.c': {
+            "errors": [{
+                "id": "invalid_email",
+                "code": 400}]
+        }
     }
 
-    async def call(self, url: str) -> dict:
+    async def call(self, _, url: str, *args, **kwargs) -> dict:
         try:
             email = parse_qs(urlparse(url).query)['email'][0]
             result = self.INNER_TEST_DATA[email]
@@ -48,13 +50,3 @@ class MockHunterRequestor(IAsyncClientRequester):
             return {}
         else:
             return result
-
-
-@fixture()
-def instance_hunter() -> HunterRequestor:
-    return HunterRequestor(MockHunterRequestor(), api_token='test_token')
-
-
-@fixture()
-def instance_hunter_disabled() -> HunterRequestor:
-    return HunterRequestor(MockHunterRequestor(), api_token='')

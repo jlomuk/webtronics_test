@@ -1,44 +1,42 @@
-import dataclasses
+from typing import Literal
 
-from vendors.base_requestor import IAsyncClientRequester, BaseRequestor
+from schemas.hunter_schema import ResponseHunter
 from settings import settings
+from vendors.base_requester import IAsyncClientRequester, BaseRequester
+
+hunter_checker = None
 
 
-@dataclasses.dataclass(init=False)
-class ResponseHunter:
-    status: str
-    email: str
+class HunterRequester:
+    REJECT_STATUSES = ('invalid', 'disposable', 'invalid_email')
 
-    def __init__(self, **kwargs):
-        names = set([f.name for f in dataclasses.fields(self)])
-        for k, v in kwargs.items():
-            if k in names:
-                setattr(self, k, v)
-
-
-class HunterRequestor:
-    REJECT_STATUSES = ('invalid', 'disposable')
-
-    def __init__(self, requestor: IAsyncClientRequester, api_token: str = settings.HUNTER__API_TOKEN):
-        self.requestor = requestor or BaseRequestor()
+    def __init__(self, requester: IAsyncClientRequester, api_token: str = settings.HUNTER__API_TOKEN):
+        self.requester = requester or BaseRequester()
+        self.base_url = "https://api.hunter.io/v2"
         self.api_token = api_token
 
-    async def call(self, url) -> dict:
+    async def call(self, method: Literal['get', 'post', 'delete', 'patch'], url: str, success_status: tuple,
+                   headers: dict = None,
+                   data: dict = None) -> dict:
         if not self.api_token:
             return {}
-        return await self.requestor.call(url)
+        return await self.requester.call(method, url, headers, data, success_status)
 
     async def verify_email(self, email: str) -> bool:
-        url = f"https://api.hunter.io/v2/email-verifier?email={email}&api_key={self.api_token}"
-        data = await self.call(url)
-        try:
-            verdict = ResponseHunter(**data['data'])
-        except (TypeError, KeyError):
-            return True
+        url = f"{self.base_url}/email-verifier?email={email}&api_key={self.api_token}"
+        data = await self.call('get', url, success_status=(200, 400))
+        verdict = ResponseHunter(**data)
 
-        if verdict.status in self.REJECT_STATUSES:
+        if verdict.data and verdict.data.status in self.REJECT_STATUSES:
             return False
+        elif verdict.errors and verdict.errors[0].id in self.REJECT_STATUSES:
+            return False
+
         return True
 
 
-hunter_requestor = HunterRequestor(BaseRequestor(wrong_statuses={202, 222}))
+def get_hunter_requester():
+    global hunter_checker
+    if hunter_checker is None:
+        hunter_checker = HunterRequester(BaseRequester(wrong_statuses={202, 222}))
+    return hunter_checker

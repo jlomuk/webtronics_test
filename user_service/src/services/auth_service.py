@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+
 from jose import jwt
 from jose.exceptions import JWTError, ExpiredSignatureError
 
@@ -45,7 +46,6 @@ class AuthService:
         secret = self.jwt_secret
         if is_refresh:
             secret = self.jwt_refresh_secret
-        print(secret, token)
         try:
             payload = jwt.decode(token, secret, self.algorithm)
         except ExpiredSignatureError:

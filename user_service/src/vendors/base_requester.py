@@ -5,7 +5,7 @@ from typing import Literal
 
 from aiohttp_retry import RetryClient, RequestParams, ExponentialRetry
 
-logging.basicConfig()
+logging.basicConfig(format='%(levelname)s  %(name)s  %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -13,11 +13,11 @@ logger.setLevel(logging.DEBUG)
 class IAsyncClientRequester(ABC):
 
     @abstractmethod
-    async def call(self, method: str, url: str) -> dict:
+    async def call(self, method: str, url: str, headers=None, data=None, success_statuses=(200, 201, 204)) -> dict:
         pass
 
 
-class BaseRequestor(IAsyncClientRequester):
+class BaseRequester(IAsyncClientRequester):
 
     def __init__(self, attempts: int = 2, start_timeout: float = .2, max_timeout: float = 2.0,
                  factor: float = .4, wrong_statuses: set[int] = None):
@@ -45,9 +45,8 @@ class BaseRequestor(IAsyncClientRequester):
             async with client.requests(params_list=[req_param]) as resp:
                 logger.info("Sending request...")
                 logger.debug(
-                    f'Request with Method: {req_param.method.upper()} || '
-                    f'Url: {req_param.url} || Headers: {req_param.headers} || '
-                    f'Data: {data}'
+                    f'Request with Method: {req_param.method.upper()} || Status_code: {resp.status} || '
+                    f'Url: {req_param.url} || Headers: {req_param.headers} || Data: {data}'
                 )
                 if resp.status in success_statuses:
                     logger.info("Successfully request finish")
