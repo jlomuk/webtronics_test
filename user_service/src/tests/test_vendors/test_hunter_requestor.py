@@ -8,6 +8,7 @@ import pytest
         ("invalid@email.ru", False),
         ("disposable@emal.ru", False),
         ("unknown@email.ru", True),
+        ('webmail@email.ru', True ),
         ("webmail@gmail.c", False)
     ]
 )

@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 3  # 3 days
     ALGORITHM: str = "HS256"
 
-    SALT_FOR_PASSWORD: str = 'Fofo'
+    SALT_FOR_PASSWORD: str = 'SALT'
 
     HUNTER__API_TOKEN: str = ''
 
