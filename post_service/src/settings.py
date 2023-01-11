@@ -9,8 +9,11 @@ from logger import LogConfig
 dictConfig(LogConfig().dict())
 logger = logging.getLogger("post_service")
 
+
 class Settings(BaseSettings):
     POSTGRES_URL: PostgresDsn = ''
+    REDIS_HOST: str
+    REDIS_PORT: str
 
     class Config():
         env_file = '.env'
