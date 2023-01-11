@@ -18,7 +18,7 @@ async def get_list_post(post_service=Depends(PostService)):
     try:
         result = await post_service.list()
     except NotFoundPost:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Пост не найден')
+        return []
     except ValidationError as e:
         logger.warning(e.errors())
         raise HTTPException(status_code=422, detail=e.errors())
@@ -54,9 +54,9 @@ async def get_post(post_id: int, post_service: PostService = Depends(PostService
                    status_code=status.HTTP_200_OK)
 async def update_post(updated_post: post.UpdatePostRequest, post_id: int,
                       post_service: PostService = Depends(PostService)):
-    logger.debug(updated_post, post_id)
+    user_id = updated_post.dict(include={'user_id'})['user_id']
     try:
-        result = await post_service.update(post_id, user_id=updated_post.dict(include={'user_id'})['user_id'],
+        result = await post_service.update(post_id, user_id,
                                            update_data=updated_post.dict(exclude={'user_id'}, exclude_none=True))
     except ValidationError as e:
         logger.warning(e.errors())
