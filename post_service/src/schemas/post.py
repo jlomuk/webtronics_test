@@ -6,6 +6,8 @@ from pydantic import BaseModel, EmailStr, validator
 from schemas.custom_base_model import CustomBaseModel
 
 
+# ==================================REQUEST_SCHEMAS======================================
+
 class BasePostRequest(BaseModel):
     id: int
 
@@ -18,18 +20,28 @@ class DeletePostRequest(BasePostRequest):
     pass
 
 
-class CreatePostRequest(BaseModel):
+class UpdateCreatePostRequest(BaseModel):
     title: str
     body: str
     user_id: int
+
+    @validator('title')
+    def title_check(cls, value):
+        if value == '':
+            raise ValueError('title not be empty')
+        return value
+
+
+class CreatePostRequest(UpdateCreatePostRequest):
     email: EmailStr
 
 
-class UpdatePostRequest(BaseModel):
+class UpdatePostRequest(UpdateCreatePostRequest):
     title: str | None
     body: str | None
-    user_id: int
 
+
+# ===================================RESPONSE_SCHEMAS====================================
 
 class PostCreateResponse(BaseModel):
     post_id: int

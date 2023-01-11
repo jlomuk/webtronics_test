@@ -70,11 +70,16 @@ class PostCRUD:
         return result.mappings().first()
 
     async def patch(self, post_id: int, user_id: int, data: dict) -> dict:
+        if not data:
+            return await self.retrieve_with_reaction(post_id)
+
         statement = update(self.post_table) \
-            .where(self.post_table.c.id == post_id, self.post_table.c.user_id == user_id)
+            .where(self.post_table.c.id == post_id, self.post_table.c.user_id == user_id).returning(self.post_table.c.id)
 
         async with self.connection.begin() as conn:
             res = await conn.execute(statement, data)
+            if not res.mappings().first():
+                return {}
 
         return await self.retrieve_with_reaction(post_id)
 
