@@ -2,3 +2,4 @@
 /user_service/src/.pytest_cache/
 /post_service/.vscode/
 .idea
+__pycache__
