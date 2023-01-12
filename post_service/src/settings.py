@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     POSTGRES_URL: PostgresDsn = ''
     REDIS_HOST: str
     REDIS_PORT: str
+    REACTION_CACHE_EXPIRE: int = 3600
 
     class Config():
         env_file = '.env'

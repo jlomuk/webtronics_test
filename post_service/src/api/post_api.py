@@ -23,7 +23,7 @@ async def get_list_post(post_service=Depends(PostService)):
         logger.warning(e.errors())
         raise HTTPException(status_code=422, detail=e.errors())
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise HTTPException(status_code=500, detail='Неизвестная ошибка')
     else:
         return result
@@ -42,7 +42,7 @@ async def get_post(post_id: int, post_service: PostService = Depends(PostService
     except NotFoundPost:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Пост не найден')
     except Exception as e:
-        logger.warning(e)
+        logger.exception(e)
         raise HTTPException(status_code=500, detail='Неизвестная ошибка')
     else:
         return result
@@ -64,7 +64,7 @@ async def update_post(updated_post: post.UpdatePostRequest, post_id: int,
     except NotFoundPost:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Пост не найден')
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise HTTPException(status_code=500, detail='Неизвестная ошибка')
     else:
         return result
@@ -78,7 +78,7 @@ async def add_post(new_post: post.CreatePostRequest, post_service: PostService =
     try:
         result = await post_service.create(new_post.dict())
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise HTTPException(status_code=500, detail='Неизвестная ошибка')
     else:
         return result
@@ -93,7 +93,7 @@ async def delete_post(post_id: int, user_id: int, post_service: PostService = De
     except NotFoundPost:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Пост не найден')
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise HTTPException(status_code=500, detail='Неизвестная ошибка')
     else:
         return
@@ -109,7 +109,7 @@ async def like(post_id: int, user_id: int, post_service: PostService = Depends(P
     except NotFoundPost:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Пост не найден')
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise HTTPException(status_code=500, detail='Неизвестная ошибка')
     else:
         return result
@@ -125,7 +125,7 @@ async def dislike(post_id: int, user_id: int, post_service: PostService = Depend
     except NotFoundPost:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Пост не найден')
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise HTTPException(status_code=500, detail='Неизвестная ошибка')
     else:
         return result

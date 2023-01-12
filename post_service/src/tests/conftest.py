@@ -1,5 +1,6 @@
 import asyncio
 import re
+from unittest.mock import patch, AsyncMock
 
 import pytest
 import pytest_asyncio
@@ -11,6 +12,7 @@ from app import app
 from db.connection import get_engine
 from db.models import meta
 from fastapi.testclient import TestClient
+from external.redis_cache.client import RedisCacheClient
 
 from settings import settings
 
@@ -42,6 +44,15 @@ async def connect_test_db() -> AsyncEngine:
         await conn.run_sync(meta.create_all)
 
     return engine
+
+
+@pytest.fixture(autouse=True)
+def mocked_redis_cache():
+    with patch('services.post.RedisCacheClient', return_value=AsyncMock()) as mocked_redis:
+        mocked_redis.return_value.get.return_value = False
+        mocked_redis.return_value.exists.return_value = False
+        mocked_redis.return_value.set.return_value = False
+        yield mocked_redis
 
 
 async def disconnect_test_db():

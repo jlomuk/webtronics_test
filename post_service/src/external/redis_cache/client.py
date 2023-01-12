@@ -1,5 +1,6 @@
 from aiocache import caches
 from aiocache import RedisCache
+from aiocache.base import SENTINEL
 
 from aiocache.serializers import JsonSerializer, BaseSerializer
 
@@ -34,8 +35,11 @@ class RedisCacheClient:
     async def get(self, key: str) -> dict | list | str:
         return await self.cache.get(key)
 
-    async def set(self, key: str, value: dict | list | str):
-        return await self.cache.set(key, value)
+    async def set(self, key: str, value: dict | list | str, expire=SENTINEL) -> bool:
+        return await self.cache.set(key, value, ttl=expire)
 
-    async def exists(self, key: str):
+    async def exists(self, key: str) -> bool:
         return await self.cache.exists(key)
+
+    async def clear(self):
+        return await self.cache.clear()

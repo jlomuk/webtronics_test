@@ -20,7 +20,7 @@ class ReactionCRUD:
         self.connection: AsyncEngine = conn
         self.post_crud = post_crud
 
-    async def get_reaction(self, post_id: int, user_id: int) -> dict:
+    async def get(self, post_id: int, user_id: int) -> dict:
         stm = select(self.reaction_table).where(self.reaction_table.c.post_id == post_id,
                                                 self.reaction_table.c.user_id == user_id)
         async with self.connection.begin() as conn:
@@ -28,13 +28,13 @@ class ReactionCRUD:
 
         return result.mappings().first()
 
-    async def create_reaction(self, reaction_body: dict):
+    async def create(self, reaction_body: dict):
         stm = insert(self.reaction_table)
 
         async with self.connection.begin() as conn:
             await conn.execute(stm, reaction_body)
 
-    async def update_reaction(self, exists_post: dict, reaction_type: bool):
+    async def update(self, exists_post: dict, reaction_type: bool):
         if (like := reaction_type) == exists_post['like']:
             like = None
 
@@ -45,11 +45,11 @@ class ReactionCRUD:
     async def action_reaction(self, post_id: int, user_id: int, reaction_type: bool):
         reaction_body = {'post_id': post_id, 'user_id': user_id, 'like': reaction_type}
         if await self.post_crud.check_owner_post(post_id, user_id):
-            exists_post = await self.get_reaction(post_id, user_id)
+            exists_post = await self.get(post_id, user_id)
             if exists_post:
-                await self.update_reaction(exists_post, reaction_type)
+                await self.update(exists_post, reaction_type)
             else:
-                await self.create_reaction(reaction_body)
+                await self.create(reaction_body)
 
         return await self.post_crud.retrieve_with_reaction(post_id)
 

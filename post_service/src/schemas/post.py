@@ -3,8 +3,6 @@ import datetime
 import pytz
 from pydantic import BaseModel, EmailStr, validator
 
-from schemas.custom_base_model import CustomBaseModel
-
 
 # ==================================REQUEST_SCHEMAS======================================
 
@@ -47,12 +45,12 @@ class PostCreateResponse(BaseModel):
     post_id: int
 
 
-class Reaction(CustomBaseModel):
+class Reaction(BaseModel):
     like: int = 0
     dislike: int = 0
 
 
-class PostResponse(CustomBaseModel):
+class PostResponse(BaseModel):
     id: int
     title: str
     body: str
