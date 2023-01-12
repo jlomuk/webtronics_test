@@ -2,18 +2,20 @@ from typing import NoReturn
 
 from fastapi import Depends
 
-from db.repository import PostCRUD
+from db.repository.post import PostCRUD
+from db.repository.reaction import ReactionCRUD
 from schemas.post import PostResponse
 from services.errors import NotFoundPost
 
 
 class PostService:
 
-    def __init__(self, post_crud=Depends(PostCRUD)):
+    def __init__(self, post_crud=Depends(PostCRUD), reaction_crud=Depends(ReactionCRUD)):
         self.post_crud: PostCRUD = post_crud
+        self.reaction_crud: ReactionCRUD = reaction_crud
 
     async def list(self) -> list[PostResponse] | NoReturn:
-        data = await self.post_crud.list()
+        data = await self.post_crud.list_with_reaction()
         if not data:
             raise NotFoundPost
         return PostResponse.parse_obj(data)
@@ -25,8 +27,9 @@ class PostService:
         return PostResponse.parse_obj(data)
 
     async def create(self, data: dict) -> dict:
-        data = await self.post_crud.create(data)
-        return {'post_id': data}
+        post = await self.post_crud.create(data)
+        await self.reaction_crud.create_reaction({'post_id': post, 'user_id': data['user_id']})
+        return {'post_id': post}
 
     async def delete(self, pk: int, user_id: int) -> NoReturn:
         data = await self.post_crud.delete(pk, user_id)
@@ -40,13 +43,13 @@ class PostService:
         return PostResponse.parse_obj(data)
 
     async def like_post(self, post_id, user_id) -> PostResponse:
-        data = await self.post_crud.like(post_id, user_id)
+        data = await self.reaction_crud.like(post_id, user_id)
         if not data:
             raise NotFoundPost
         return PostResponse.parse_obj(data)
 
     async def dislike_post(self, post_id, user_id) -> PostResponse:
-        data = await self.post_crud.dislike(post_id, user_id)
+        data = await self.reaction_crud.dislike(post_id, user_id)
         if not data:
             raise NotFoundPost
         return PostResponse.parse_obj(data)
