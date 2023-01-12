@@ -11,9 +11,7 @@ from external.redis_cache.client import RedisCacheClient
 
 class PostService:
 
-    def __init__(self, post_crud=Depends(PostCRUD),
-                 reaction_crud=Depends(ReactionCRUD),
-                 ):
+    def __init__(self, post_crud=Depends(PostCRUD), reaction_crud=Depends(ReactionCRUD)):
         self.post_crud: PostCRUD = post_crud
         self.reaction_crud: ReactionCRUD = reaction_crud
         self.cache = RedisCacheClient()
@@ -37,7 +35,7 @@ class PostService:
             posts = await self.post_crud.retrieve_many_with_reaction(missed_cache_post)
             for post in posts:
                 reaction = await self.build_reaction(dict(post))
-                await self.cache.set(str(post['id']), reaction, settings.REACTION_CACHE_EXPIRE)
+                await self.cache.set(str(post['id']), reaction)
                 result.append(dict(post) | reaction)
         return result
 

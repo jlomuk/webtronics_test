@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from db.models import meta
 from settings import settings
 
-engine = create_async_engine(settings.POSTGRES_URL + '?prepared_statement_cache_size=0', future=True)
+engine = create_async_engine(settings.POSTGRES_URL + '?prepared_statement_cache_size=0', future=True, echo=True)
 
 
 async def create_tables():
