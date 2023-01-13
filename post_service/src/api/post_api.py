@@ -89,6 +89,7 @@ async def add_post(new_post: post.CreatePostRequest, post_service: PostService =
                     status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post(post_id: int, user_id: int, post_service: PostService = Depends(PostService)):
     try:
+        print(post_id, user_id, 3432434324)
         await post_service.delete(post_id, user_id=user_id)
     except NotFoundPost:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Пост не найден')

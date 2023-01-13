@@ -34,7 +34,6 @@ class PostService:
                 result.append(post | reaction)
             else:
                 missing_cache_post.append(post['id'])
-            # missing_cache_post.append(post['id'])
 
         if missing_cache_post:
             missed_cache_posts = await self.post_crud.retrieve_many_with_reaction(missing_cache_post)

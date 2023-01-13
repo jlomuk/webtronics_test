@@ -25,7 +25,7 @@ class RedisCacheClient:
 
     async def set(self, key: str, value: dict | list | str) -> bool:
         data = await self.cache.set(key, json.dumps(value))
-        self.pipeline.expire(key, self.expire_time)
+        await self.cache.expire(key, self.expire_time)
         return data
 
     def set_pipeline(self):
