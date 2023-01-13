@@ -2,7 +2,6 @@ from typing import NoReturn
 
 from fastapi import Depends
 
-from settings import settings
 from db.repository.post import PostCRUD
 from db.repository.reaction import ReactionCRUD
 from services.errors import NotFoundPost
@@ -22,21 +21,28 @@ class PostService:
             raise NotFoundPost
 
         result = []
-        missed_cache_post = []
-
         for post in posts:
             post_id = post['id']
-            if await self.cache.exists(post_id):
-                result.append(dict(post) | await self.cache.get(post_id))
-            else:
-                missed_cache_post.append(post_id)
+            self.cache.pget(post_id)
 
-        if missed_cache_post:
-            posts = await self.post_crud.retrieve_many_with_reaction(missed_cache_post)
-            for post in posts:
-                reaction = await self.build_reaction(dict(post))
-                await self.cache.set(str(post['id']), reaction)
+        result_redis = await self.cache.execute_pipeline()
+
+        missing_cache_post = []
+        for index, reaction in enumerate(result_redis):
+            post = dict(posts[index])
+            if reaction:
+                result.append(post | reaction)
+            else:
+                missing_cache_post.append(post['id'])
+
+        if missing_cache_post:
+            missed_cache_posts = await self.post_crud.retrieve_many_with_reaction(missing_cache_post)
+            for post in missed_cache_posts:
+                reaction = self.build_reaction(dict(post))
+                self.cache.pset(post['id'], reaction)
                 result.append(dict(post) | reaction)
+            await self.cache.execute_pipeline()
+
         return result
 
     async def retrieve(self, pk: int) -> dict | NoReturn:
@@ -47,8 +53,8 @@ class PostService:
         reaction = await self.cache.get(str(pk))
         if not reaction:
             data = await self.post_crud.retrieve_with_reaction(pk)
-            reaction = await self.build_reaction(data)
-            await self.cache.set(str(pk), reaction, settings.REACTION_CACHE_EXPIRE)
+            reaction = self.build_reaction(data)
+            await self.cache.set(str(pk), reaction)
 
         return data | reaction
 
@@ -70,8 +76,8 @@ class PostService:
         reaction = await self.cache.get(str(post_id))
         if not reaction:
             data = await self.post_crud.retrieve_with_reaction(post_id)
-            reaction = await self.build_reaction(data)
-            await self.cache.set(str(post_id), reaction, settings.REACTION_CACHE_EXPIRE)
+            reaction = self.build_reaction(data)
+            await self.cache.set(str(post_id), reaction)
 
         return data | reaction
 
@@ -80,8 +86,8 @@ class PostService:
         if not data:
             raise NotFoundPost
 
-        reaction = await self.build_reaction(data)
-        await self.cache.set(str(post_id), reaction, settings.REACTION_CACHE_EXPIRE)
+        reaction = self.build_reaction(data)
+        await self.cache.set(str(post_id), reaction)
         return data | reaction
 
     async def dislike_post(self, post_id, user_id) -> dict | NoReturn:
@@ -89,11 +95,11 @@ class PostService:
         if not data:
             raise NotFoundPost
 
-        reaction = await self.build_reaction(data)
-        await self.cache.set(str(post_id), reaction, settings.REACTION_CACHE_EXPIRE)
+        reaction = self.build_reaction(data)
+        await self.cache.set(str(post_id), reaction)
         return data | reaction
 
     @staticmethod
-    async def build_reaction(data: dict) -> dict:
+    def build_reaction(data: dict) -> dict:
         reaction = {'reaction': {'like': data.pop('like'), 'dislike': data.pop('dislike')}}
         return reaction
