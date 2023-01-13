@@ -10,13 +10,13 @@ from external.redis_cache.client import RedisCacheClient
 
 class PostService:
 
-    def __init__(self, post_crud=Depends(PostCRUD), reaction_crud=Depends(ReactionCRUD)):
+    def __init__(self, post_crud: PostCRUD = Depends(), reaction_crud: ReactionCRUD = Depends()):
         self.post_crud: PostCRUD = post_crud
         self.reaction_crud: ReactionCRUD = reaction_crud
         self.cache = RedisCacheClient()
 
-    async def list(self) -> list[dict] | NoReturn:
-        posts = await self.post_crud.list()
+    async def list(self, limit: int, offset: int) -> list[dict] | NoReturn:
+        posts = await self.post_crud.list(limit=limit, offset=offset)
         if not posts:
             raise NotFoundPost
 

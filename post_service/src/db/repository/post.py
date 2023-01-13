@@ -1,7 +1,7 @@
 from typing import TypeVar, List
 
 from fastapi import Depends
-from sqlalchemy import delete, insert, text, update, select, bindparam
+from sqlalchemy import delete, insert, text, update, select, bindparam, desc
 from sqlalchemy.engine import CursorResult
 from sqlalchemy.ext.asyncio.engine import AsyncEngine
 from sqlalchemy.sql.schema import Table
@@ -19,8 +19,8 @@ class PostCRUD:
         self.post_table: TableType = self.POST_TABLE
         self.connection: AsyncEngine = conn
 
-    async def list(self) -> dict:
-        stm = select(self.post_table)
+    async def list(self, limit, offset) -> dict:
+        stm = select(self.post_table).offset(offset).limit(limit).order_by(desc('id'))
 
         async with self.connection.begin() as conn:
             result = await conn.execute(stm)

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import ValidationError
 from starlette import status
 
@@ -14,9 +14,9 @@ post_router = APIRouter(prefix='/post', tags=['post'])
                  description='Получение списка всех постов пользователя',
                  response_model=list[post.PostResponse],
                  status_code=status.HTTP_200_OK)
-async def get_list_post(post_service=Depends(PostService)):
+async def get_list_post(offset: int = 0, limit: int = Query(default=10, lt=20), post_service: PostService = Depends()):
     try:
-        result = await post_service.list()
+        result = await post_service.list(limit, offset)
     except NotFoundPost:
         return []
     except ValidationError as e:

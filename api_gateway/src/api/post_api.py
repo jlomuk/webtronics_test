@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, Query
 from starlette import status
 
 from helpers import request
@@ -13,9 +13,9 @@ post_router = APIRouter(prefix='/post', tags=['post'], )
                  description='Получение списка всех постов пользователя',
                  responses={200: {"model": post.PostResponse}},
                  status_code=status.HTTP_200_OK)
-async def get_list_post(user=Depends(auth_wrapper)):
+async def get_list_post(offset: int = 0, limit: int = Query(default=10, lt=20), user=Depends(auth_wrapper)):
     url = settings.TASK_BACKEND_SERVICE.rstrip('/') + '/post/'
-    result = await request.request(url, 'get')
+    result = await request.request(url, 'get', params={'limit': limit, 'offset': offset})
     return Response(content=result.content, status_code=result.status_code, media_type="application/json")
 
 
