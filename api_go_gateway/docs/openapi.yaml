@@ -1,0 +1,488 @@
+openapi: 3.0.2
+info:
+  title: Api gateway
+  description: Microservices api gateway
+  version: 0.0.1
+paths:
+  /api/v1/auth/refresh_token:
+    post:
+      tags:
+        - auth
+      summary: Refresh Token
+      description: Обновление access токена
+      operationId: refresh_token_api_v1_auth_refresh_token_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              example:
+                result: Передан невалидный токен
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/auth/login:
+    post:
+      tags:
+        - auth
+      summary: Login
+      description: Логин пользователя с получением токенов
+      operationId: login_api_v1_auth_login_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              example:
+                result: Wrong password
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/auth/registration:
+    post:
+      tags:
+        - auth
+      summary: Registration
+      description: Регистрация нового пользователя
+      operationId: registration_api_v1_auth_registration_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              example:
+                result: Такой пользователь уже существует
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/post/:
+    get:
+      tags:
+        - post
+      summary: Get List Post
+      description: Получение списка всех постов пользователя
+      operationId: get_list_post_api_v1_post__get
+      parameters:
+        - required: false
+          schema:
+            title: Offset
+            type: integer
+            default: 0
+          name: offset
+          in: query
+        - required: false
+          schema:
+            title: Limit
+            type: integer
+            default: 10
+          name: limit
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    post:
+      tags:
+        - post
+      summary: Add Post
+      description: Добавление нового поста
+      operationId: add_post_api_v1_post__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePostRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostCreateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /api/v1/post/{post_id}:
+    get:
+      tags:
+        - post
+      summary: Get Post
+      description: Получение конкретного поста по id
+      operationId: get_post_api_v1_post__post_id__get
+      parameters:
+        - required: true
+          schema:
+            title: Post Id
+            type: integer
+          name: post_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    delete:
+      tags:
+        - post
+      summary: Delete Post
+      description: Удаление поста по id
+      operationId: delete_post_api_v1_post__post_id__delete
+      parameters:
+        - required: true
+          schema:
+            title: Post Id
+            type: integer
+          name: post_id
+          in: path
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+    patch:
+      tags:
+        - post
+      summary: Add Post
+      description: Обновление поста
+      operationId: add_post_api_v1_post__post_id__patch
+      parameters:
+        - required: true
+          schema:
+            title: Post Id
+            type: integer
+          name: post_id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePostRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /api/v1/post/{post_id}/like:
+    get:
+      tags:
+        - post
+      summary: Like Post
+      description: Лайк поста
+      operationId: like_post_api_v1_post__post_id__like_get
+      parameters:
+        - required: true
+          schema:
+            title: Post Id
+            type: integer
+          name: post_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+  /api/v1/post/{post_id}/dislike:
+    get:
+      tags:
+        - post
+      summary: Dislike Post
+      description: Удаление поста по id
+      operationId: dislike_post_api_v1_post__post_id__dislike_get
+      parameters:
+        - required: true
+          schema:
+            title: Post Id
+            type: integer
+          name: post_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBearer: []
+components:
+  schemas:
+    CreatePostRequest:
+      title: CreatePostRequest
+      required:
+        - title
+        - body
+      type: object
+      properties:
+        title:
+          title: Title
+          type: string
+        body:
+          title: Body
+          type: string
+        user_id:
+          title: User Id
+          type: integer
+        email:
+          title: Email
+          type: string
+          format: email
+    HTTPValidationError:
+      title: HTTPValidationError
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+    LoginRequest:
+      title: LoginRequest
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          format: email
+        password:
+          title: Password
+          type: string
+    PostCreateResponse:
+      title: PostCreateResponse
+      required:
+        - post_id
+      type: object
+      properties:
+        post_id:
+          title: Post Id
+          type: integer
+    PostResponse:
+      title: PostResponse
+      required:
+        - id
+        - title
+        - body
+        - user_id
+        - email
+        - created_date
+      type: object
+      properties:
+        id:
+          title: Id
+          type: integer
+        title:
+          title: Title
+          type: string
+        body:
+          title: Body
+          type: string
+        user_id:
+          title: User Id
+          type: integer
+        email:
+          title: Email
+          type: string
+          format: email
+        created_date:
+          title: Created Date
+          type: string
+          format: date-time
+        reaction:
+          $ref: '#/components/schemas/Reaction'
+    Reaction:
+      title: Reaction
+      type: object
+      properties:
+        like:
+          title: Like
+          type: integer
+          default: 0
+        dislike:
+          title: Dislike
+          type: integer
+          default: 0
+    RefreshTokenRequest:
+      title: RefreshTokenRequest
+      required:
+        - refresh_token
+      type: object
+      properties:
+        refresh_token:
+          title: Refresh Token
+          type: string
+    RegistrationRequest:
+      title: RegistrationRequest
+      required:
+        - email
+        - password
+        - password_repeat
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          format: email
+        password:
+          title: Password
+          type: string
+        password_repeat:
+          title: Password Repeat
+          type: string
+    TokenResponse:
+      title: TokenResponse
+      required:
+        - refresh_token
+        - access_token
+      type: object
+      properties:
+        refresh_token:
+          title: Refresh Token
+          type: string
+        access_token:
+          title: Access Token
+          type: string
+    UpdatePostRequest:
+      title: UpdatePostRequest
+      type: object
+      properties:
+        title:
+          title: Title
+          type: string
+        body:
+          title: Body
+          type: string
+        user_id:
+          title: User Id
+          type: integer
+    ValidationError:
+      title: ValidationError
+      required:
+        - loc
+        - msg
+        - type
+      type: object
+      properties:
+        loc:
+          title: Location
+          type: array
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer
